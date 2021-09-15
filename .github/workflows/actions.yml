@@ -1,0 +1,85 @@
+name: Lighthouse Checker Test
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  # Add Title Comment to First Lighthouse check
+  lighthouse_comment_title_first:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add comment
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            ### First Lighthouse check (before Deploy) 👇
+            
+  # First Lighthouse check (before Deploy)
+  lighthouse_check_first:
+    needs: lighthouse_comment_title_first
+    runs-on: ubuntu-latest
+    steps:
+      # Lighthouse tests
+      - uses: actions/checkout@master
+      - run: mkdir /tmp/artifacts
+      - name: Run Lighthouse
+        uses: foo-software/lighthouse-check-action@master
+        with:
+          accessToken: ${{ secrets.LIGHTHOUSE_CHECK_GITHUB_ACCESS_TOKEN }}
+          outputDirectory: "/tmp/artifacts"
+          emulatedFormFactor: all
+          locale: us
+          urls: >-
+            ${{ secrets.SITE_URL }},
+            ${{ secrets.SITE_URL }}/assessing-kidney-size,
+            ${{ secrets.SITE_URL }}/ambassador-videos,
+            ${{ secrets.SITE_URL }}/adpkd-diagnosis
+
+  # Deploy
+  deploy:
+    needs: lighthouse_check_first
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Deployment started."
+      - run: echo "Deployment successfully completed!"
+      - name: Add comment
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            ### Deployment successfully completed! 🎉
+
+  # Add Title Comment to Second Lighthouse check
+  lighthouse_comment_title_second:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add comment
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            ### Second Lighthouse check (after Deploy) 👇
+
+  # Second Lighthouse check (after Deploy)
+  lighthouse_check_second:
+    needs: lighthouse_comment_title_second
+    runs-on: ubuntu-latest
+    steps:
+      # Lighthouse tests
+      - uses: actions/checkout@master
+      - run: mkdir /tmp/artifacts
+      - name: Run Lighthouse
+        uses: foo-software/lighthouse-check-action@master
+        with:
+          accessToken: ${{ secrets.LIGHTHOUSE_CHECK_GITHUB_ACCESS_TOKEN }}
+          outputDirectory: "/tmp/artifacts"
+          emulatedFormFactor: all
+          locale: us
+          prCommentSaveOld: true
+          urls: >-
+            ${{ secrets.SITE_URL }},
+            ${{ secrets.SITE_URL }}/assessing-kidney-size,
+            ${{ secrets.SITE_URL }}/ambassador-videos,
+            ${{ secrets.SITE_URL }}/adpkd-diagnosis
