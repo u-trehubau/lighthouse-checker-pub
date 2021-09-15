@@ -1,0 +1,28 @@
+name: Lighthouse Checker Manual
+on:
+  workflow_dispatch:
+
+jobs:
+  # Lighthouse check
+  lighthouse_check:
+    runs-on: ubuntu-latest
+    steps:
+      # Lighthouse tests
+      - uses: actions/checkout@master
+      - run: mkdir /tmp/artifacts
+      - name: Run Lighthouse
+        uses: foo-software/lighthouse-check-action@master
+        with:
+          outputDirectory: "/tmp/artifacts"
+          emulatedFormFactor: all
+          locale: us
+          urls: >-
+            ${{ secrets.SITE_URL }},
+            ${{ secrets.SITE_URL }}/assessing-kidney-size,
+            ${{ secrets.SITE_URL }}/ambassador-videos,
+            ${{ secrets.SITE_URL }}/adpkd-diagnosis
+      - name: Upload artifacts
+        uses: actions/upload-artifact@master
+        with:
+          name: Lighthouse reports
+          path: /tmp/artifacts
