@@ -1,4 +1,4 @@
-name: Lighthouse Checker Test
+name: Lighthouse Checker and Deploy
 on:
   pull_request:
     types: [closed]
