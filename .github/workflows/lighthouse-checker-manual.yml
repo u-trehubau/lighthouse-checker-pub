@@ -1,4 +1,4 @@
-name: Lighthouse Checker Manual
+name: Manual Lighthouse Checker
 on:
   workflow_dispatch:
 
