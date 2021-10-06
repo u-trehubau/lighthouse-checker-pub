@@ -28,3 +28,4 @@ jobs:
       - name: Get Dotenv Data
         run: |
           echo "Lighthouse URLs: ${{ steps.dotenv.outputs.lighthouse_urls }}"
+          echo "Lighthouse URLs: ${{ steps.dotenv.outputs.lighthouse_urls_2 }}"
