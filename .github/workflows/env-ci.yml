@@ -1,0 +1,30 @@
+name: Test Env CI
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment (no|dev|stage)'
+        required: true
+        default: 'dev'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # Get the code
+      - uses: actions/checkout@v2
+
+      # Read from .env file
+      - name: Dotenv Action
+        id: dotenv
+        uses: falti/dotenv-action@v0.2.7
+        with:
+          path: .env
+          log-variables: true
+          mask-variables: false
+
+      # Print the data from .env file
+      - name: Get Dotenv Data
+        run: |
+          echo "Lighthouse URLs: ${{ steps.dotenv.outputs.lighthouse_urls }}"
