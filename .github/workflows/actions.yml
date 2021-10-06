@@ -9,13 +9,20 @@ jobs:
     runs-on: ubuntu-latest
     name: Lighthouse Check First
     steps:
+      - uses: actions/checkout@master
+      - name: Dotenv Action
+        id: dotenv
+        uses: falti/dotenv-action@v0.2.7
+        with:
+          path: .env
+          log-variables: true
+          mask-variables: false
       - name: Add comment
         uses: peter-evans/create-or-update-comment@v1
         with:
           issue-number: ${{ github.event.pull_request.number }}
           body: |
             ### First Lighthouse check (before Deploy) 👇
-      - uses: actions/checkout@master
       - run: mkdir /tmp/artifacts
       - name: Run Lighthouse
         uses: foo-software/lighthouse-check-action@master
@@ -27,11 +34,7 @@ jobs:
           # Put here all URLs that you want to test.
           # URLs should be separated by coma ",".
           # Do not add a coma to the last URL.
-          urls: >-
-            ${{ secrets.SITE_URL }},
-            ${{ secrets.SITE_URL }}/assessing-kidney-size,
-            ${{ secrets.SITE_URL }}/ambassador-videos,
-            ${{ secrets.SITE_URL }}/adpkd-diagnosis
+          urls: ${{ steps.dotenv.outputs.lighthouse_urls }}
 
   # Deploy
   deploy:
@@ -72,7 +75,4 @@ jobs:
           # URLs should be separated by coma ",".
           # Do not add a coma to the last URL.
           urls: >-
-            ${{ secrets.SITE_URL }},
-            ${{ secrets.SITE_URL }}/assessing-kidney-size,
-            ${{ secrets.SITE_URL }}/ambassador-videos,
-            ${{ secrets.SITE_URL }}/adpkd-diagnosis
+            ${{ secrets.SITE_URL }}
